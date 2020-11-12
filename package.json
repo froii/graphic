@@ -6,7 +6,5 @@
   "author": "Oleksa Tyshchenko | froii <froii@ukr.net>",
   "license": "MIT",
   "private": false,
-  "dependencies": {
-    "prettier": "^2.1.2"
-  }
+  "dependencies": {}
 }
