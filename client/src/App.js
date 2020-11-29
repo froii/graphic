@@ -1,10 +1,10 @@
 import React from "react";
 import "./App.css";
-import { PageWithGraphic } from "./scenes";
+import { Totter } from "./scenes";
 
 const App = () => (
   <div className="App">
-    <PageWithGraphic />
+    <Totter />
   </div>
 );
 
