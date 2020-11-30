@@ -25,16 +25,20 @@ export const Totter = () => {
   const [rotateTotter, setRotateTotter] = useState(0);
 
   useEffect(() => {
+    const left = leftSide.reduce((sum, cur) => sum + cur.weight, 0);
+    setRotateTotter(rightSideWeight - left);
+  }, [leftSide]);
+
+  useEffect(() => {
     let i = 1;
     let timerId = setTimeout(function run() {
       setLeftSide((st) => [...st, { type: setType(), weight: setWeight() }]);
-      const left = leftSide.reduce((sum, cur) => sum + cur.weight, 0);
-      setRotateTotter(rightSideWeight - left);
       if (i < 10) {
         setTimeout(run, TIME * 10 - TIME * i);
       }
       i++;
     }, TIME * 10);
+
     return () => {
       clearInterval(timerId);
     };
@@ -74,6 +78,7 @@ const Line = styled.div`
   background: #000;
   position: relative;
   transform: rotateZ(${(p) => p.rotate}deg);
+  transition: transform 1s ease-in-out 1s;
 `;
 
 const Center = styled.span`
@@ -93,6 +98,17 @@ const Figure = styled.span`
   line-height: 50px;
   position: absolute;
   margin: 0 auto 10px;
+  animation: 1s ease-in-out 1 fall;
+  transition: bottom 1s ease-in-out;
+
+  @keyframes fall {
+    0% {
+      bottom: 3000px;
+    }
+    70% {
+      bottom: 1000px;
+    }
+  }
 
   ${(p) => {
     if (p.i <= 3) {
