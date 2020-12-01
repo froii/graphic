@@ -2,7 +2,6 @@ import React from "react";
 import { CanvasJSChart, CanvasJS } from "canvasjs-react-charts";
 
 export const Graphic = ({ dataPoints = [] }) => {
-  console.log(dataPoints);
   return (
     <CanvasJSChart
       options={{

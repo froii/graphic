@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createElement } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const TIME = 400;
@@ -20,7 +20,7 @@ const rightSide = new Array(rightSideQuantity)
 
 const rightSideWeight = rightSide.reduce((sum, cur) => sum + cur.weight, 0);
 
-export const Totter = () => {
+const Totter = () => {
   const [leftSide, setLeftSide] = useState([]);
   const [rotateTotter, setRotateTotter] = useState(0);
 
@@ -161,3 +161,5 @@ const Figure = styled.span`
 
 Totter.uiName = "Totter";
 Totter.displayName = "Totter";
+
+export default Totter;

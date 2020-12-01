@@ -4,7 +4,7 @@ import { Toast, Graphic } from "../components";
 
 const SOCKET = "ws://localhost:3001";
 
-export const PageWithGraphic = () => {
+const GraphicTemperature = () => {
   const [data, setData] = useState([]);
   const [message, setMessage] = useState("");
   let lastElement = data.length - 1;
@@ -97,5 +97,7 @@ const InfoBlock = styled.div`
   }
 `;
 
-Graphic.uiName = "Graphic";
-Graphic.displayName = "Graphic";
+GraphicTemperature.uiName = "GraphicTemperature";
+GraphicTemperature.displayName = "GraphicTemperature";
+
+export default GraphicTemperature;
