@@ -1,38 +1,66 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 
 const TIME = 400;
 
-const rightSideQuantity = Math.floor(Math.random() * 9);
+const randomNumber = () => Math.floor(Math.random() * 10);
+
+const randomSlide = () => ({
+  type: setType(),
+  weight: randomNumber(),
+  x: randomNumber(),
+  y: 1,
+});
 
 const setType = () => {
-  const number = Math.floor(Math.random() * 9);
+  const number = randomNumber();
   if (number <= 3) return "triangle";
   if (number > 3 && number <= 6) return "circle";
   if (number > 6) return "rectangle";
 };
 
-const setWeight = () => Math.floor(Math.random() * 10);
+const rightSide = new Array(randomNumber() || 6).fill(0).map(randomSlide);
 
-const rightSide = new Array(rightSideQuantity)
-  .fill(0)
-  .map(() => ({ type: setType(), weight: setWeight() }));
+const rightSideWeight = rightSide.reduce(
+  (sum, cur) => sum + cur.weight * cur.x,
+  0
+);
 
-const rightSideWeight = rightSide.reduce((sum, cur) => sum + cur.weight, 0);
+const setSlides = (sides, side) => {
+  let posX = {};
+  return sides.map(({ type, weight, x }, i) => {
+    posX[x] = posX[x] >= 0 ? posX[x] + 1 : 0;
+    return (
+      <Figure
+        w={weight * 2}
+        vert={posX[x]}
+        hor={x}
+        className={type}
+        key={`${side} ${i}`}
+        side={side}
+      >
+        <span> {weight} </span>
+      </Figure>
+    );
+  });
+};
 
 const Totter = () => {
   const [leftSide, setLeftSide] = useState([]);
   const [rotateTotter, setRotateTotter] = useState(0);
 
   useEffect(() => {
-    const left = leftSide.reduce((sum, cur) => sum + cur.weight, 0);
+    const left = leftSide.reduce(
+      (sum, cur) => sum + (cur.weight / cur.x) * 6,
+      0
+    );
     setRotateTotter(rightSideWeight - left);
   }, [leftSide]);
 
   useEffect(() => {
     let i = 1;
     let timerId = setTimeout(function run() {
-      setLeftSide((st) => [...st, { type: setType(), weight: setWeight() }]);
+      setLeftSide((st) => [...st, randomSlide()]);
       if (i < 10) {
         setTimeout(run, TIME * 10 - TIME * i);
       }
@@ -44,23 +72,24 @@ const Totter = () => {
     };
   }, []);
 
+  const setLeftSlidesMemo = useMemo(() => setSlides(leftSide, "left"), [
+    leftSide,
+  ]);
+  const setRightSlidesMemo = useMemo(() => setSlides(rightSide, "right"), [
+    rightSide,
+  ]);
+
   return (
     <TotterContainer>
-      <Line rotate={rotateTotter}>
-        {leftSide.map(({ type, weight }, i) => (
-          <Figure i={i} className={type} key={`left ${i}`} side="left">
-            <span> {weight}kg </span>
-          </Figure>
-        ))}
-
-        <Center />
-
-        {rightSide.map(({ type, weight }, i) => (
-          <Figure i={i} className={type} key={`right ${i}`} side="right">
-            <span> {weight}kg </span>
-          </Figure>
-        ))}
-      </Line>
+      {rotateTotter < -30 ? (
+        <strong>BOOM</strong>
+      ) : (
+        <Line rotate={rotateTotter / 5}>
+          {setLeftSlidesMemo}
+          <Center />
+          {setRightSlidesMemo}
+        </Line>
+      )}
     </TotterContainer>
   );
 };
@@ -95,7 +124,7 @@ const Center = styled.span`
 const Figure = styled.span`
   display: inline-block;
   height: 50px;
-  line-height: 50px;
+  width: 50px;
   position: absolute;
   margin: 0 auto 10px;
   animation: 1s ease-in-out 1 fall;
@@ -110,52 +139,44 @@ const Figure = styled.span`
     }
   }
 
-  ${(p) => {
-    if (p.i <= 3) {
-      return `
-      bottom: ${50 * p.i}px;
-      ${p.side}: 0;
-    `;
-    }
+  ${(p) => `
+     bottom: ${50 * p.vert}px;
+     ${p.side}: ${50 * p.hor}px;`}}
 
-    if (p.i > 3 && p.i <= 6) {
-      return `
-      bottom: ${50 * (p.i - 4)}px;
-      ${p.side}: 60px;
-    `;
-    }
-
-    if (p.i > 6) {
-      return `
-      bottom: ${50 * (p.i - 7)}px;
-      ${p.side}: 120px;
-    `;
-    }
-  }}
-
-  &.triangle {
-    width: 40px;
-    border: 29px solid transparent;
-    border-bottom: 40px solid #002480;
+  &::after {
+    content: '';
+    position: absolute;
+    transform: translateX(-50%);
+    bottom: 0;
   }
 
-  &.circle {
-    width: 50px;
+  &.triangle::after {
+    border-left:  ${(p) => 10 + p.w}px solid transparent;
+    border-right:  ${(p) => 10 + p.w}px solid transparent;
+    border-bottom:  ${(p) => 20 + p.w}px solid #002480;
+  }
+  
+  &.circle::after  {
+    height: ${(p) => 20 + p.w}px;;
+    width: ${(p) => 20 + p.w}px;
     border-radius: 50%;
     background: #053fe3;
   }
 
-  &.rectangle {
-    width: 60px;
+  &.rectangle::after  { 
+    height: ${(p) => 20 + p.w}px;
+    width: ${(p) => 30 + p.w}px;
     background: #5b86f6;
   }
 
   span {
     position: absolute;
+    bottom: 3px;
     left: 50%;
     transform: translateX(-50%);
     color: #fff;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
+    z-index: 2;
   }
 `;
 
