@@ -8,3 +8,4 @@ You can use have already compiled files from dist folder - **cd server** and **n
 ***
 # React application - port 3333
 Join to folder **cd client/** and run **yarn start** || **npm run start**
+--- totter - http://localhost:3333/totter
